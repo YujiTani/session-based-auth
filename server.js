@@ -2,6 +2,7 @@ const express = require("express");
 const session = require('express-session')
 const {RedisStore} = require("connect-redis")
 const {createClient} = require("redis")
+require('dotenv').config();
 
 const app = express();
 
@@ -48,9 +49,9 @@ app.post('/admin/register', (req, res) => {
     // create user session
 
     // end point で admin と user を切り替える
-    res.session.roles = 'admin'
+    req.session.roles = 'admin'
     // random client id
-    res.session.clientId = '1234567890'
+    req.session.clientId = '1234567890'
 
     res.status(201).json({
         message: 'User registered successfully'
@@ -67,9 +68,9 @@ app.post('/user/register', (req, res) => {
     // create user session
 
     // end point で admin と user を切り替える
-    res.session.roles = 'user'
+    req.session.roles = 'user'
     // random client id
-    res.session.clientId = '1234567890'
+    req.session.clientId = '1234567890'
 })
 
 app.post('/login', (req, res) => {
@@ -77,15 +78,15 @@ app.post('/login', (req, res) => {
 
     // user check
 
-    res.session.roles = 'user'
-    res.session.clientId = '1234567890'
+    req.session.roles = 'user'
+    req.session.clientId = '1234567890'
 
     res.status(200).json({
         message: 'User logged in successfully'
     })
 })
 
-app.use((req, res, next) => {
+const sessionCheck = (req, res, next) => {
     // session check
     if (!req.session || !req.session.roles || !req.session.clientId) {
         return res.status(401).json({
@@ -94,9 +95,9 @@ app.use((req, res, next) => {
     }
 
     next()
-})
+}
 
-app.get('/hobby', (req, res) => {
+app.get('/hobby', sessionCheck, (req, res) => {
     // request validation
 
     res.status(200).json({
