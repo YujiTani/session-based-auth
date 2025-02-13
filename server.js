@@ -5,6 +5,9 @@ const {createClient} = require("redis")
 
 const app = express();
 
+// アプリケーションがプロキシの後ろで動く場合、信頼できるプロキシとして設定しないと、プロトコルのご認識などが発生する
+// app.set('trust proxy', 1)
+
 const redisClient = createClient({
     url: 'redis://localhost:6379'
 })
