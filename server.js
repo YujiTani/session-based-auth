@@ -27,11 +27,82 @@ app.use(session({
     cookie: {
         secure: process.env.NODE_ENV === 'production',
         httpOnly: true,
-        maxAge: 1000 * 60 * 60 * 24 * 30 // 30 days
+        maxAge: 1000 * 60 * 30 // 30 minutes
     }
 }))
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+
+const users = []
+
+app.post('/admin/register', (req, res) => {
+    // request validation
+
+    // already registered user check
+
+    // password hash
+    // const password = req.body.password
+    // const hashedPassword = await bcrypt.hash(password, 10)
+
+    // create user session
+
+    // end point で admin と user を切り替える
+    res.session.roles = 'admin'
+    // random client id
+    res.session.clientId = '1234567890'
+
+    res.status(201).json({
+        message: 'User registered successfully'
+    })
+})
+
+app.post('/user/register', (req, res) => {
+    // request validation
+
+    // already registered user check
+
+    // password hash
+
+    // create user session
+
+    // end point で admin と user を切り替える
+    res.session.roles = 'user'
+    // random client id
+    res.session.clientId = '1234567890'
+})
+
+app.post('/login', (req, res) => {
+    // request validation
+
+    // user check
+
+    res.session.roles = 'user'
+    res.session.clientId = '1234567890'
+
+    res.status(200).json({
+        message: 'User logged in successfully'
+    })
+})
+
+app.use((req, res, next) => {
+    // session check
+    if (!req.session || !req.session.roles || !req.session.clientId) {
+        return res.status(401).json({
+            message: 'session is not valid'
+        })
+    }
+
+    next()
+})
+
+app.get('/hobby', (req, res) => {
+    // request validation
+
+    res.status(200).json({
+        message: 'hobby is valid'
+    })
+})
 
 app.listen(4567, () => {
     console.log('Server is running on port 4567')
